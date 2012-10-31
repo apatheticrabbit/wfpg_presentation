@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Erlang - WFPG</title>
+        <link href="web/bootstrap.css" rel="stylesheet" media="screen">
+    </head>
+    <body>
+        <div class="container" id="head"><h1>Erlang - Functions and Modules</h1>
+            <ul class="nav nav-pills" id="nav">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="intro.html">Introduction</a></li>
+                <li><a href="start.html">Getting Started</a></li>
+                <li class="active" >
+                <a href="funcs.html">Functions and Modules</a></li>
+                <li><a href="procs.html">Processes</a></li>
+            </ul>
+        </div>
+        <div class="container" id="content">
+            <h2>Modules</h2>
+            <p>Each Erlang source file is a Module. It should be a collection of (hopefully related) functions. 
+            Each Module is its own namespace and
+            exports a public API of functions that other modules can call. 
+            Recall that functions in other modules are called by prefixing 
+            them with their module name as module:function()</p>
+            <p>Modules can contain a number of directives that define the Module and metadata for the module. 
+            There is only a couple that
+            we will need.</p>
+            <h3>Module Definition</h3>
+            <p>The module definition directive is simply: -module(module_name). 
+            This should be the first non-comment or whitespace line of a module.
+            the module name as appears above is an atom that matched the name of the source file without its .erl extension.</p>
+            <h3>Export</h3>
+            <p>The export directive is a list of function names to export. 
+            So if you want to export the start function (with zero arguments) 
+            from your module the syntax is -export([start/0]). You can include more than one function name to export in the list. 
+            You can also include more than one export directive in your module in order to organize the exports by logical categories. 
+            For example you could include one export for the public API you expect callers to use and then another export 
+            for functions not intended to be called by users of the module but instead by framework or library code. 
+            This is a good practice to be more organized and revealing about your intentions.</p>
+            <h3>Compiling Modules</h3>
+            <p>Modules can be compiled and loaded into the VM to call their exported functions. This is done with the c(module_name). 
+            function in the shell. The module_name atom is the same as the one used in the module directive. 
+            The c() command expects the 
+            source file to be in some place the running VM knows about. 
+            The easiest way to make sure of that is to run the VM from the same
+            directory as your source files. If you need to (like if you're running Windows) 
+            you can change the current directory of the VM with
+            the cd("path as a string"). command in the shell.</p>
+            <p>That is all we'll need to know about modules to get going!</p>
+            <h2>Functions</h2>
+            <p>Functions are the bread and butter of programming in Erlang. Lets examine the parts of a function definition 
+            starting with the simplest type.
+            <pre>
+function_name(Argument, List) ->
+    function body line 1,
+    function body line 2.
+            </pre>
+            This is a function it has two arguments (Argument and List). After the arrow '->' we put the function body. 
+            The first line is an
+            erlang expression, this line is ended with a comma to indicate more lines are included in this function body.
+            The next line is the final line, the value of this line is the return value of the function.
+            The function definition is ended with a full stop '.'.
+            </p>
+            <p>
+            Functions can also include multiple clauses. What's a clause? It is basically a
+            repeat function definition with a different header.
+            The header must still take the same number of arguments but each header can have a different pattern 
+            (or different guards as will be explained later). 
+            Then when the function is called one particular clause is chosen by the runtime using pattern matching! 
+            Function clauses before the last are ended with a semicolon instead of a full stop. 
+            The entire function definition must be ended
+            with a full stop.
+            <pre>
+% The literal in the argument list is pattern matched 
+% when the function is called. This version of 'function_name' is called
+% if list is empty.
+function_name(Argument, []) ->
+    empty;
+% Otherwise this one is called. This will match for any two arguments
+function_name(Argument, List) ->
+    full.
+            </pre>
+            </p>
+            <h3>Guards</h3>
+            <p>
+            What happens when you need to be more specific than just pattern matching for a function clause? 
+            What if you want to match only when a number is not zero? That's when you can use guards. Guards are a boolean expression
+            that comes after using the when keyword in a function header. 
+            Multiple guards can be used with commas between denoting 'and' or semi-colons
+            denoting 'or'. Guards can only use built in functions or operators because they need to be 
+            guaranteed to have no side effects.
+            </p>
+            <pre>
+my_divide(X,Y) when y /= 0 ->
+    X/Y.
+
+between_one_and_one_hundred(N) when N >=1, N =< 100 ->
+    ok.
+boolean(B) when B =:= true; B =:= false ->
+    ok.
+            </pre>
+            <h3>Exercises</h3>
+            <p>Open up the file my_first_funs.erl and follow the directions in there.</p>
+            <h2>Controlling Flow</h2>
+            <p>
+            So far we've needed to define a new function or clause for each branch of operation. 
+            That's kind of a pain what other options do we have?
+            I'll show you two. Erlang's strange if expression and it's cooler cousin the case expression.
+            <h3>If?</h3>
+            <p>Erlang's if is basically a way to check guard expressions. Each guard had it's own body to execute and each body line. 
+            Like a function body it is comma separated expressions. Except for the last line of a body which is ended with a semi-colon. 
+            The final body line in the whole if does not require puncutation. 
+            The last line of the body executed is the return value for the if expression.</p>
+            <pre>
+if
+    guardExpression1 ->
+        body1;
+    guardExpression2 ->
+        body2
+end
+
+if
+    N >0 ->
+        gt;
+    true ->
+        lt;
+end
+            </pre>
+            Notice that there is no else. To achieve the same idea we use a guard of true which will always succeed.
+            </p>
+            <p>To be honest Erlang's if statement is kind of strange. That's OK don't use it unless you absolutely must. 
+            Most of the time
+            you will be using regular function clauses or case expressions which are frankly better almost always.
+            </p>
+            <h3>Case</h3>
+            <p>A case statement is a way to match multiple patterns with a single expression. It looks a little like this</p>
+            <pre>
+case Expression of 
+    Pattern1 [when optionalGuard1] ->
+        body1;
+    Pattern2 [when optionalGuard2] ->
+        body2
+end
+
+case do_something() of
+    ok ->
+        "Succeeded! Go Hog Wild!"
+    {error , _Reason} ->
+        "Uh Oh!"
+end
+            </pre>
+            <h2>Recursion</h2>
+            <p>We're almost done the sequential parts of Erlang and we haven't even seen a loop yet. What's up with that? 
+             Erlang doesn't have any looping constructs. Instead we can have functions call themselves over and over again. 
+             Welcome to recursion.</p>
+            <p>In recursion we break a problem down by finding the simplest case. Then we see how we can break down the problem again
+            and again from an arbitrary case.</p>
+            <pre>
+% Find the length of a list.
+recursive_length([]) ->
+% The length of the empty set is 0
+    0;
+recursive_length([_| Tail]) ->
+    1 + recursive_length(Tail).
+            </pre>
+            <h3>Tail Recursion</h3>
+            <p>Isn't recursion supposed to be bad? 
+            What about if we need a program to run a very long time. 
+            Normally recursion needs to keep a frame on the stack for each
+            execution of a function if it's not completely resolved. If we try to run a recursive loop for 
+            too long won't the VM run out of
+            memory and crash? Not if we use tail recursion. The VM is smart enough that if the last line of a function is just a plain
+            function call it discards the last stack frame knowing it won't be needed. So that way we can run for as long as we want
+            without running out of memory. Under most circumstances we can implement a regular recursive function by tail recursion
+            by including an extra parameter as an accumulator.
+            <pre>
+tail_recursive_length([],Length) ->
+% This is the base case signalling the end
+% of the recursive loop
+    Length;
+tail_recursive_length([_|Tail], Length) ->
+% Notice this is simply a function call, no other parts
+% to this expression need to be kept on the stack.
+    tail_recursive_length(Tail, Length) + 1.
+
+% You will often see the main loops of independent processes implemented thus
+% This is tail recursive and can run for as long as you please.
+loop(State) ->
+    NewState = do_stuff(State),
+    loop(NewState).
+            </pre>
+            </p>
+            <p>
+            How do we choose which way to use? Isn't it safer to always use tail recursion? Nope. Tail recursion is harder to follow 
+            and involves extra steps if you're building a list (see exercises). Usually, unless you're building the main loop of a long
+            running process use regular recursion. It can often be less memory intensive and is more clear.
+            </p>
+            <h3>Exercises</h3>
+            <p>Open up recursion.erl to find the exercises about exercises, I mean recursion.</p>
+            <a href="procs.html">Next: Erlang Processes</a>
+        </div>
+        <div class="container" id="foot"><p class="muted credit">Erlang for the Winnipeg Functional Programming Group - Justin Haywood 2012</p></div>
+    </body>
+</html>

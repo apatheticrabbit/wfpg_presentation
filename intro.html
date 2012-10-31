@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Erlang - WFPG</title>
+        <link href="web/bootstrap.css" rel="stylesheet" media="screen">
+    </head>
+    <body>
+        <div class="container"id="head"><h1>Erlang - Introduction</h1>
+            <ul class="nav nav-pills" id="nav">
+                <li><a href="index.html">Home</a></li>
+                <li class="active">
+                <a href="intro.html">Introduction</a></li>
+                <li><a href="start.html">Getting Started</a></li>
+                <li><a href="funcs.html">Functions and Modules</a></li>
+                <li><a href="procs.html">Processes</a></li>
+            </ul>
+        </div>
+        <div class="container" id="content">
+            <h2>About Me</h2>
+            <p>Hi I'm Justin Haywood. I currently work for Richardson International. 
+            I spend most of my days coding PL/SQL and VBA. I'm fairly new
+            to programming having graduated from Red River College's BIT program in May of this year. 
+            Before that I worked as a manager in a wine 
+            store for 6 years. I also have a BSc. in Math and Physics from the University of Manitoba.</p>
+            <p>As you may guess it's my math background inclines me towards functional programming</p>
+            <h2>Erlang</h2>
+            <p>Erlang was first developed in the 1980's at Ericsson for programming telephone switches. It was released as open source in 1998.</p>
+            <p>Erlang is a very practical language. It isn't very functionally pure like Haskell. It is actually designed from the bottom up to
+            build fault tolerant highly available systems. These design decisions impact the language profoundly.</p>
+            <p>Some of the core features are:</p>
+            <ul>
+                <li>Concurrency: The language contains built in primitives (Erlang processes) for multithreading and concurrency. 
+                These are much lighter than threads in other languages and are used much more throughout Erlang. Processes
+                can only communicate by passing messages and can never corrupt eachother's memory</li>
+                <li>Distribution: The highly concurrent nature of Erlang programs lends itself to distribution accross
+                several computers on a network. The Erlang VM can handle distribution transparently behind the scenes.</li>
+                <li>Functional Style: The declarative nature of the language reduces the amount of code you need to write</li>
+                <li>The OTP Framework: The Open Telephony Platform is Erlang's standard library. Not only does it provide a bevy 
+                of modules for various tasks, it also has powerful libraries for common abstractions. You can implement common
+                Erlang design patterns like servers, event handlers, finite state machines and event handlers all by simply
+                implementing callback routines for these patterns. On top of all that are debugging, tracing, code coverage and
+                static analysis tools built right into the standard erlang distribution.
+                <li>Hot Code Reloading: The VM and standard libraries are designed to allow code changes to be brought
+                online without disrupting any current clients or doing any rolling shutdowns</li>
+            </ul>
+            <p>While you may be unfamiliar with Erlang as a language you've probably encountered a service that uses Erlang to run it's back end.
+            Some examples</p>
+            <ul>
+                <li>Facebook Chat: Built using Ejabberd an erlang XMPP implementation</li>
+                <li>Activision Blizzard: Runs Call of Duty servers on Erlang</li>
+                <li>What's App: Erlang Backend handles up to 10 billion messages a day. 2.8 Million connections to a single BSD server.</li>
+                <li>Distributed Databases: CouchDB, CouchBase and Riak are written in Erlang</li>
+                <li>RabbitMQ: An Erlang AMQP implementation</li>
+            </ul>
+            <h2>Goals</h2>
+            <p>
+            The goal today is to introduce you to the basics of Erlang programming and to have some fun! 
+            I unfortunately cannot guarantee that all the code we'll come up with today will be idiomatic Erlang as written by an expert. 
+            But hopefully I can suprise you with how useful Erlang is.
+            </p>
+            <a href="start.html">Next: Getting Started</a>
+        </div>
+        <div class="container" id="foot"><p class="muted credit">Erlang for the Winnipeg Functional Programming Group - Justin Haywood 2012</p></div>
+    </body>
+</html>

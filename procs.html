@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Erlang - WFPG</title>
+        <link href="web/bootstrap.css" rel="stylesheet" media="screen">
+    </head>
+    <body>
+        <div class="container" id="head"><h1>Erlang - Processes</h1>
+            <ul class="nav nav-pills" id="nav">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="intro.html">Introduction</a></li>
+                <li><a href="start.html">Getting Started</a></li>
+                <li><a href="funcs.html">Functions and Modules</a></li>
+                <li class="active" ><a href="procs.html">Processes</a></li>
+            </ul>
+        </div>
+        <div  class="container" id="content">
+            <h2>The Erlang Process</h2>
+            <p>
+            Erlang is built for massive concurrency. Processes are lightweight, they start and die quickly and 
+            have very little overhead (about 300 words or a few k). Processes are completely independent of one
+            another and can only communicate by passing messages. By default messages are asynchronous so unless you
+            make them processes won't wait for a reply.
+            </p>
+            <p>
+            Every concurrent part of your program should have it's own process. What does that mean? Here's some examples
+                <ul>
+                    <li>Every independent part that may fail but can be safely restarted: Database connections, web services
+                    , every try/catch?</li>
+                    <li>Each independent state: A system controlling 3 elevators for a 10 floor building
+                    should have 13 processes. One for each independent part.</li>
+                    <li>In the standard library every open file has its own process in the usual case</li>
+                    <li>Some processes organize other processes: they control when other processes are started and
+                    stopped, handle dependencies between others. Supervisors and workers</li>
+                </ul>
+            Processes communicate by copying messages to eachother. You can send any term to another process as a message
+            by using the '!' operator. For example
+            <pre>
+% Self returns your own Pid 
+% Useful to allow other processes to reply
+&lt;Pid&gt; ! {hello, self()}
+            </pre>
+            Processes can listen for messages by using recieve.
+            <pre>
+recieve
+    Pattern1 ->
+        Body1;
+    Pattern2 ->
+        Body2;
+    Any ->
+        io:format("Got a message we didn't expect ~p~n",[Any])
+end
+            </pre>
+            </p>
+            <h2>Spawn</h2>
+            <p>The spawn command is used to start new processes.
+            <pre>
+Pid = spawn(Module, Function, [Arguments, List]).
+            </pre>
+            This creates a new process, and helpfully gives you its Pid so that you can communicate with it.
+            </p>
+            <h2>Process Demo</h2>
+            <h2>Registering</h2>
+            <p>Sometimes it is more helpful to have a single name for a particular process. This way other
+            processes don't need to look up its Pid to communicate.
+            <pre>
+% Name is an atom
+register(Name, Pid).
+
+% For example
+register(firehall, self()).
+
+% Now other processes can send messages to the firehall
+% by using the atom it is named
+firehall ! {fire, "123 Some St."}.
+            </pre>
+            </p>
+            <h2>Linking</h2>
+            <p>Processes that depend on eachother can be linked together.
+            <pre>
+link(Pid).
+% Or as a single operation
+spawn_link(Module, Function, Args).
+            </pre>
+            Links are two way and mark both processes as related. Processes that are linked will recieve messages
+            from eachother when they die.
+            </p>
+            <h2>Process Death</h2>
+            <p>
+            When a process finishes execution or experiences an unrecoverable error it dies. We say that processes
+            terminate for a certain reason. If the process simply executed the last line of code in it's function
+            it terminates normally, otherwise the reason for termination is the error that caused the process to fail.
+            </p>
+            <p>
+            When a process dies it sends a message to every linked process {'EXIT', FromPid, Reason}. 
+            If this message specifies an non normal exit reason any linked process will also die. If you don't want 
+            all of your linked processes to die in a massive chain reaction you can set the trap_exit process flag
+            <pre>
+process_flag(trap_exit,true).
+            </pre>
+            Now any abnormal terminations of linked processes will not kill this process. Instead it recieves the
+            exit message as it would any other normal message and you can respond to it however you like.
+            </p>
+            <h2>Fault Tolerance</h2>
+            <p>
+            How does all this add up to fault tolerance? In normal programming would use try catch blocks to handle errors
+            you can do something about but what about the ones you don't expect? You can try to anticipate every situation (hard)
+            or you can catch every possible exception (Bad idea - what do you do with your program in an inconsistant state?). 
+            In Erlang the process boundary acts like a try / catch. You spawn a process to try something if it fails the program
+            is still in a known state and you can just restart from there. So in contrast to brittle try/catches that try to keep
+            the main thread of your program from crashing, in Erlang you let it crash and then restart the appropriate part of the
+            process tree. This means don't try to anticipate errors if you don't need to! Unanticipated errors should turn into
+            log messages not program crashes.
+            </p>
+            <h3>Exercises</h3>
+            <ol>
+                <li>Open doc_serv.erl to make a server that runs a document store like you defined earlier</li>
+                <li>Open webs.erl and fill in the part that parses http requests using the pre defined functions
+                in hyptxt.erl</li>
+                <li>You can use fancy_ui.html to store documents (it expects you to open a tcp socket using webs.erl listening
+                on port 4567)</li>
+                <li>try to request a document you've saved by using your browser to navigate to localhost:4567/document_key</li>
+            <a href="index.html">Finished!: index</a>
+        </div>
+        <div class="container" id="foot"><p class="muted credit">Erlang for the Winnipeg Functional Programming Group - Justin Haywood 2012</p></div>
+    </body>
+</html>

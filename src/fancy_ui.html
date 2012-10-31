@@ -1,0 +1,28 @@
+<html>
+    <head>
+        <title>Erlang - WFPG THE APP</title>
+        <script>
+            function set_action() {
+                var form = document.getElementById("app");
+                var key = document.getElemetnById("key");
+                form.action += key.value
+                return true
+            }
+        </script>
+    </head>
+    <body>
+        <form 
+            id="app" name="app" 
+            action="http://localhost:4567/" 
+            method="post"
+            onsubmit="set_action()">
+            <label >Document Key</label>
+            <input type="text" id="key" name="key">
+            <br />
+            <label >Document</label>
+            <input type="textarea" id="doc" name="doc">
+            <input type="submit" value="Send"> 
+        </form>
+     </body>
+</html>
+

@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Erlang - WFPG</title>
+        <link href="web/bootstrap.css" rel="stylesheet" media="screen">
+    </head>
+    <body>
+        <div class="container" id="head"><h1>Erlang - Getting Started</h1>
+            <ul class="nav nav-pills" id="nav">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="intro.html">Introduction</a></li>
+                <li class="active"><a href="start.html">Getting Started</a></li>
+                <li><a href="funcs.html">Functions and Modules</a></li>
+                <li><a href="procs.html">Processes</a></li>
+                <li><a href="otp.html">OTP Framework</a></li>
+            </ul>
+        </div>
+        <div  class="container" id="content">
+            <h2>The Shell</h2>
+            <p>The Erlang shell is your window into the VM. It allows you to run code to try it out and to control
+            and debug currently running programs. It's is easy to start up. Either open up the shell program from your windows start 
+            menu or open up a terminal and type erl.
+            </p>
+            <pre>
+$>erl
+Erlang R15B01 (erts-5.9.1) [source] [smp:2:2] [async-threads:0] [kernel-poll:false]
+
+Eshell V5.9.1  (abort with ^G)
+1>
+            </pre>
+            <p>
+            To quit use Ctrl-g then type q
+            </p>
+            <p>
+            To make use of the shell's autocompletion you can use tab. Take a few seconds to fool around. If you get lost close the shell using
+            Ctrl-g and then q. You can use the function f(). to make the shell forget assigned variables.
+            </p>
+            <h2>Expressions</h2>
+            <p>Erlang's syntax will probably seem very unfamilar at this point. Don't worry it's a very simple language and it will grow on you.
+            In Erlang a full stop (ie period) marks the end of an expression. Try typing some numbers in the shell.
+            <pre>
+1> 3.1415.
+3.1415
+2> 10000.
+10000
+3> %Comments begin with a percent
+3> %Variables must begin with an upper case letter
+3> Pi = 3.1415.
+3.1415
+4> Pi.
+3.1415
+5> %Functions are called by using their name
+5> is_float(Pi).
+true
+6> %Functions in modules need to be prefixed with their module name
+6> dict:new().
+{dict,0,16,16,8,80,48,
+      {[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]},
+      {{[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]}}}
+            </pre>
+            <h3>Exercises</h3>
+            <p>
+                <ol>
+                <li>Try pressing tab in an empty line on the shell. This should print a list of all the available modules. 
+                Take a few seconds to read them over, to get an idea of what is automatically loaded when the vm starts</li>
+                <li>Notice the erlang module. This module is an important one so functions in it don't have to be prefixed with the name of the module.
+                Try typing it's name then colon then tab completing to see these functions.</li>
+                <li>Notice the ones in single quotes. These are operators. They are probably at least somewhat familiar. 
+                '==' and '=:=' are both equality tests. Try them both out with different numbers can you tell the difference? 
+                Hint:Try mixing and matching floats and integers.</li>
+                <li>Save something in a variable. Try reassigning that variable using equals again.</li>
+                </ol>
+            </p>
+            <h2>Data Types</h2>
+            <p>These are the data types that exist in the Erlang VM called Terms. 
+            There are two kinds, primitive terms which represent data and compound terms that allow the combination of other terms.</p>
+            <h3>Numbers</h3>
+            <p>Numbers come in integers and floats. Characters are represented as numbers. 
+            In Erlang integers are arbitrary precision so they don't overflow as long as the VM has memory.</p>
+            <pre>
+1> 5.
+5
+2> % Decimal values need a leading zero to parse
+2> .5.
+* 1: syntax error before: 5
+2> 0.5.
+0.5
+3> %Characters are represented by numbers
+3> $a.
+97
+4> % Alternative bases can be represented by base#value
+4> 16#10.
+16
+5> 16#a. 
+10
+            </pre>
+            <h3>Atoms</h3>
+            <p>
+            Atoms are human readable symbols/identifiers. They are interned in the VM and are mainly used for pattern matching. Atoms usually consist
+            entirely of lower case characters and underscores. Otherwise they must be enclosed in single quotes.
+            </p>
+            <pre>
+6> atom.
+atom
+7> http_request.
+http_request
+8> is_atom('GET').
+true
+            </pre>
+            <h3>Bitstrings and Binaries</h3>
+            <p>
+            Bitstrings are simply areas of untyped memory like blobs. Binaries are bitstrings that are of lengths divisible by 8.
+            </p>
+            <pre>
+9> % Empty binary
+9> <<>>.
+<<>>
+10> <<127,0,0,1>>.
+<<127,0,0,1>>
+11> <<"Binary character data">>.
+<<"Binary character data">>
+            </pre>
+            <h3>Functions</h3>
+            <p>
+            Being a functional language, in Erlang functions are also considered terms. They can be passed to and returned from other 
+            functions as arguments and be held in data structures. Functions can only be declared anonymously in the shell. 
+            Named user functions must be written in a module file and then compiled and loaded into the VM. Named functions are identified not
+            only by their name but also their arity. Arity just means the number of arguments the function accepts. Functions can be refered to 
+            by name/arity. This works in code to pass a function as a value or it is often used in the documentation as well.
+            In a function variables are in scope any time after they have been bound. (More on binding in Pattern Matching).
+            </p>
+            <pre>
+12> fun (X) -> X end.
+#Fun<erl_eval.6.82930912>
+13> AddOne = fun (X) -> X +1 end.
+#Fun<erl_eval.6.82930912>
+14> AddOne(2).
+3
+            </pre>
+            <h3>Other Primitives</h3>
+            <p>Rounding out the primitive data types are Pid, Ports and References.</p>
+            <ul>
+                <li>Pids or Process ID's uniquely identify a thread running in the VM called a Process.</li>
+                <li>Ports are identifiers for specific types of processes that allow the VM to communicate with external programs. 
+                This uses specially written drivers. (Similar to the Java Native Interface).</li>
+                <li>References are simply identifiers created with the make_ref/0 function. 
+                They are guaranteed to be unique for each call of make_ref/0 in a VM</li>
+            </ul>
+            <h3>Tuples</h3>
+            <p>
+            Tuples are the first compound data type. They are denoted by braces like this {term(), term(), ... }.
+            The comma separated terms are called elements of the tuple. 
+            The order of the elements is significant for tuple equality. Certain built in functions can perform operations on tuples.
+            </p>
+            <pre>
+15> Tuple1 = {request, 2, "Hello"}.
+16> Tuple2 = {request, 2}.
+18> Tuple3 = {2, "Hello", request}.
+19> Tuple1 =:= Tuple2.
+false
+20> Tuple1 =:= Tuple3.
+false
+21> {tuple,{inner_tuple, {inception_tuple, <<"data">>}}}.
+22> {human_readable_identifier, "Atoms are often used as tags to identify Tuples"}.
+23> tuple_size(Tuple1).
+3
+            </pre>
+            <h3>Lists</h3>
+            Lists are similar to tuples but they can hold a variable number of terms.
+            They are denoted by brackets like this [ term(), term(), ... ]. Lists can be added together by concatenation '++' and 
+            new terms can be cons'ed on to the front of the list quickly.
+            <pre>
+24> % The empty list
+24> [].
+[]
+25> [this,that,42].
+26> [83,116,114,105,110,103].
+"String"
+27> List1 = [2,3,4].
+[2,3,4]
+28> % Pipe '|' is the cons operator.
+28> List2 = [1 | List1].
+[1,2,3,4]
+29> % the length/0 function calculates the length of a list.
+29> % Warning: this requires visiting every element
+29> % don't use length/0 to check if a list is empty.
+11> length(lists:seq(1,100000000)).
+100000000
+            </pre>
+            <h2>Pattern Matching</h2>
+            <p>The '=' operator we encountered earlier is actually called the match operator. It is the basic form of pattern matching in Erlang. We will look at some other forms later. When we say pattern matching the patterns being matched are the structure of compound terms (Lists and Tuples) and the values of primitive terms (Other data). Basically a pattern match has a right hand side which consists entirely of data as literals or bound variables and a left hand side which is matched against the right. To succeed the left hand side needs to match the structure of the right and any terms or bound variables need to be equal to their counterpart on the right. The left side can also have unbound variables that are then bound to the values of the matching terms on the right. The underscore is used as a wildcard. This will match anything.</p>
+            <pre>
+1> 7 = 7.
+7
+2> 6 = 7.
+** exception error: no match of right hand side value 7
+3> TheAnswer = 42.
+42
+4> {whatis, TheAnswer} = {whatis, 42}.
+{whatis,42}
+5> Point = {3,4}.
+{3,4}
+6> {X,Y} = Point.
+{3,4}
+7> X.
+3
+8> Y.
+4
+9> TheList = [1,2,3,4].
+[1,2,3,4]
+10> [Head | Tail] = TheList.
+[1,2,3,4]
+11> Head.
+1
+12> Tail.
+[2,3,4]
+13> [A,B | Rest] = TheList.
+[1,2,3,4]
+14> A.
+1
+15> B.
+2
+16> Rest.
+[3,4]
+17> [_,_,_,_| Empty] = TheList.
+[1,2,3,4]
+18> Empty.
+[]
+19> &lt;&lt;SourcePort:16,DestPort:16,Length:16,Checksum:16,Data/binary&gt;&gt; =
+19> <<10,10,10,20,0,11,0,0,72,101,108,108,111,32,87,111,114,108,100>>.
+<<10,10,10,20,0,11,0,0,72,101,108,108,111,32,87,111,114,
+  108,100>>
+20> SourcePort.
+2570
+21> DestPort.
+2580
+22> Length.
+11
+23> Checksum.
+0
+24> Data.
+<<"Hello World">>
+            </pre>
+            <h3>Exercises</h3>
+            <ol>
+                <li>Use pattern matching to retrieve the first element of the list in this expression {user_name,"auser"}</li>
+                <li>Lists of tuples are often used to represent sets of key value pairs. 
+                Use pattern matching to bind a variable to the value of the first pair in [{1234."Ace Rimmer"},{3456,"David Lister"}]</li>
+                <li>Imagine binary trees represented as tuples. Either as a 'node' with left and right branches or the atom empty at the leaves.
+                Extract the left branch from this ordered tree. {node, 5, {node, 3, empty, empty},{node, 6, empty, empty}}</li>
+            </ol>
+            <a href="funcs.html">Next: Functions and Modules</a>
+        </div>
+        <div class="container" id="foot"><p class="muted credit">Erlang for the Winnipeg Functional Programming Group - Justin Haywood 2012</p></div>
+    </body>
+</html>
